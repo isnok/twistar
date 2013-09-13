@@ -133,7 +133,7 @@ class InteractionBase:
         """
         Private callback for actual select query call.
 
-        @param cacheable Denotes whether or not we can use the results of this
+        @param cacheable: Denotes whether or not we can use the results of this
         query to keep the structure of a table on hand.
         """
         self.executeTxn(txn, q, args)
