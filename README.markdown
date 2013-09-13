@@ -68,7 +68,7 @@ trial twistar
 
 See the README in the twistar/tests folder for more information on testing with different database types.
 
-## Documenation
+## Documentation
 If you intent on generating API documentation, you will need pydoctor.  If you want to generate the user documentation, you will need to install Twisted Lore.
 
 To generate documentation:
