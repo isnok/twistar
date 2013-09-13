@@ -1,8 +1,7 @@
-from twistar.registry import Registry
 from twistar.dbconfig.base import InteractionBase
 
 class SQLiteDBConfig(InteractionBase):
-    
+
     def whereToString(self, where):
         assert(type(where) is list)
         query = where[0] #? will be correct
@@ -15,7 +14,7 @@ class SQLiteDBConfig(InteractionBase):
         self.executeTxn(txn, q)
         result = txn.fetchall()
         return result[0][0]
-                            
+
 
     def updateArgsToString(self, args):
         colnames = self.escapeColNames(args.keys())
@@ -26,15 +25,10 @@ class SQLiteDBConfig(InteractionBase):
     def insertArgsToString(self, vals):
         return "(" + ",".join(["?" for _ in vals.items()]) + ")"
 
-    
+
     ## retarded sqlite can't handle multiple row inserts
     def insertMany(self, tablename, vals):
         def _insertMany(txn):
             for val in vals:
                 self.insert(tablename, val, txn)
-        return Registry.DBPOOL.runInteraction(_insertMany)
-
-
-
-
-        
+        return self.REGISTRY.DBPOOL.runInteraction(_insertMany)

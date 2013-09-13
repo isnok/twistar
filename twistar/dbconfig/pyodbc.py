@@ -1,4 +1,3 @@
-from twistar.registry import Registry
 from twistar.dbconfig.base import InteractionBase
 
 class PyODBCDBConfig(InteractionBase):
