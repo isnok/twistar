@@ -1,80 +1,101 @@
-# twistar: Asynchronous Python ORM
-[![Build Status](https://secure.travis-ci.org/bmuller/twistar.png?branch=master)](https://travis-ci.org/bmuller/twistar)
+# twistar with multiple pool support
 
-The Twistar Project provides an ActiveRecord (ORM) pattern interface to the Twisted Project's RDBMS library.  This file contains minimal documentation - see the project home page at http://findingscience.com/twistar for more information.
+This is a version of twistar (https://github.com/bmuller/twistar), with support for multiple ConnectionPools.
+This way you can use twistar on multiple databases, not only your favourite one :-).
 
-## Installation
+This was made by modifying the `twistar.Registry` class in an way, that most attributes are now kept on instances of the registry, which is now required per custom DBObject-class.
 
-```
-easy_install twistar
-```
+My modified version of the orginal example code:
 
-## Usage
-Your database must be one of: MySQL, PostgreSQL, or SQLite.  The only DBAPI modules supported by Twistar are: MySQLdb, psycopg2, and sqlite3 - at least one of these must be installed.
-
-Here's the obligatory TL;DR example of creating a User record, assuming that there is a table named "users" with varchar columns for first_name and last_name and an int age column:
-
-```python
+python ```
 #!/usr/bin/env python
 from twisted.enterprise import adbapi
 from twistar.registry import Registry
 from twistar.dbobject import DBObject
 from twisted.internet import reactor
 
-class User(DBObject):
-     pass
+# Connect to the first DB
+reg_one = Registry(
+    adbapi.ConnectionPool(
+        'psycopg2',
+        host="localhost",
+        user="somebody",
+        password="secretashell",
+        database="test"
+    )
+)
 
-def done(user):
-     print "A user was just created with the name %s" % user.first_name
-     reactor.stop()
+# ORM classes for the first DB
+class OneTable(DBObject):
+    REGISTRY = reg_one
+    TABLENAME = 'table_one'
 
-# Connect to the DB
-Registry.DBPOOL = adbapi.ConnectionPool('MySQLdb', user="twistar", passwd="apass", db="twistar")
+# make a new record
+r = OneTable(
+    data_source = 'twistar-mps',
+    data = ['twistar', 'really', 'does', 'a', 'good', 'job']
+)
 
-# make a user
-u = User()
-u.first_name = "John"
-u.last_name = "Smith"
-u.age = 25
+# and save it.
+r.save()
 
-# Or, use this shorter version:
-u = User(first_name="John", last_name="Smith", age=25)
+# The same for the second DB (it's a mysql DB)
 
-# save the user
-u.save().addCallback(done)
+reg_two = Registry(adbapi.ConnectionPool('psycopg2', host="f2-ypsp-bar.infosys.de", user="fraudcheck", password="NoFraudPLZ", database="fraudcheck2"))
 
-reactor.run()
-```
+class Booking(DBObject):
+    REGISTRY = reg3
+    TABLENAME = 'booking'
 
-Then, finding this user is easy:
 
-```python
-def found(users):
-    print "I found %i users!" % len(users)
-    for user in users:
-        print "User: %s %s" % (user.first_name, user.last_name)
+reg2 = Registry(
+    adbapi.ConnectionPool(
+        'MySQLdb',
+        host="localhost",
+        user="root",
+        db="my_tst"
+    )
+)
 
-u = User.findBy(first_name="John", age=25).addCallback(found)
-```
+class OtherTable(DBObject):
+    REGISTRY = reg_two
+    TABLENAME = 'table_two'
 
-This is a very simple example - see http://findingscience.com/twistar for more complicated examples and additional uses.
+s = OtherTable(
+    data_foo = 'twistar-mps',
+    data = ['twistar', 'really', 'does', 'a', 'good', 'job']
+)
 
-## Testing
-You will need to install the sqlite3 python package if you want to run the default tests.  To run the tests:
 
-```
-trial twistar
-```
+# And we can also have multiple DBs of the same kind (here's another postgres)
+reg_three = Registry(
+    adbapi.ConnectionPool(
+        'psycopg2',
+        host="remote.host.example.com",
+        user="somebody",
+        password="secretashell",
+        database="readme"
+    )
+)
 
-See the README in the twistar/tests folder for more information on testing with different database types.
+class ThirdTable(DBObject):
+    REGISTRY = reg_three
+    TABLENAME = 'big_big_table'
 
-## Documentation
-If you intent on generating API documentation, you will need pydoctor.  If you want to generate the user documentation, you will need to install Twisted Lore.
 
-To generate documentation:
+# do some things in parallel on our dbs:
 
-```
-make docs
-```
+def done(result):
+    print 'Done with result:', result
+    reactor.stop()
 
-Then open the docs/index.html file in a browser.
+from twisted.internet.defer import DeferredList
+
+dl = DeferredList([
+    OneTable.findBy(data_source='twistar-mps', limit=3),
+    s.save(),
+    ThirdTable.find(where=['email IS NOT NULL'], limit=1),
+]).addCallback(done)
+
+reactor.run()```
+
