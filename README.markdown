@@ -41,7 +41,15 @@ r.save()
 
 # The same for the second DB (it's a mysql DB)
 
-reg_two = Registry(adbapi.ConnectionPool('psycopg2', host="f2-ypsp-bar.infosys.de", user="fraudcheck", password="NoFraudPLZ", database="fraudcheck2"))
+reg_two = Registry(
+    adbapi.ConnectionPool(
+        'psycopg2',
+        host="f2-ypsp-bar.infosys.de",
+        user="fraudcheck",
+        password="NoFraudPLZ",
+        database="fraudcheck2"
+    )
+)
 
 class Booking(DBObject):
     REGISTRY = reg3
@@ -63,7 +71,7 @@ class OtherTable(DBObject):
 
 s = OtherTable(
     data_foo = 'twistar-mps',
-    data = ['twistar', 'really', 'does', 'a', 'good', 'job']
+    data = ['twistar', 'is', 'really', 'great']
 )
 
 
