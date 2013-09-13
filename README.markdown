@@ -3,11 +3,11 @@
 This is a version of twistar (https://github.com/bmuller/twistar), with support for multiple ConnectionPools.
 This way you can use twistar on multiple databases, not only your favourite one :-).
 
-This was made by modifying the `twistar.Registry` class in an way, that most attributes are now kept on instances of the registry, which is now required per custom DBObject-class.
+This was made by modifying the `twistar.Registry` class in an way, that most attributes are now kept on instances of the registry, which is now required per `DBObject`.
 
 My modified version of the orginal example code:
 
-python ```
+```python
 #!/usr/bin/env python
 from twisted.enterprise import adbapi
 from twistar.registry import Registry
@@ -99,3 +99,4 @@ dl = DeferredList([
 
 reactor.run()```
 
+For more information have a look the original repository.
