@@ -1,0 +1,81 @@
+done:
+
+twistar/dbconfig/pyodbc.py:1:from twistar.registry import Registry
+twistar/exceptions.py:14:    Error resulting from the attempted fetching of a class from the L{Registry} that was
+
+
+looked at:
+
+twistar/registry.py:11:class Registry:
+twistar/registry.py:34:            Registry.REGISTRATION[klass.__name__] = klass
+twistar/registry.py:42:        if not Registry.REGISTRATION.has_key(name):
+twistar/registry.py:44:        return Registry.REGISTRATION[name]
+twistar/registry.py:54:        driver = Registry.DBPOOL.dbapi.__name__
+twistar/registry.py:65:        if Registry.IMPL is not None:
+twistar/registry.py:66:            return Registry.IMPL
+twistar/registry.py:68:        if Registry.DBPOOL is None:
+twistar/registry.py:69:            msg = "You must set Registry.DBPOOL to a adbapi.ConnectionPool before calling this method."
+twistar/registry.py:71:        dbapi = Registry.DBPOOL.dbapi
+twistar/registry.py:74:            Registry.IMPL = MySQLDBConfig()
+twistar/registry.py:77:            Registry.IMPL = SQLiteDBConfig()
+twistar/registry.py:80:            Registry.IMPL = PostgreSQLDBConfig()
+twistar/registry.py:83:            Registry.IMPL = PyODBCDBConfig()
+twistar/registry.py:87:        return Registry.IMPL
+
+twistar/dbobject.py:8:from twistar.registry import Registry
+twistar/dbobject.py:74:        self._config = Registry.getConfig()
+twistar/dbobject.py:426:        config = Registry.getConfig()
+twistar/dbobject.py:443:        config = Registry.getConfig()
+twistar/dbobject.py:471:        config = Registry.getConfig()
+twistar/dbobject.py:499:        if Registry.SCHEMAS.has_key(tablename):
+twistar/dbobject.py:500:            for key in Registry.SCHEMAS[tablename]:
+twistar/dbobject.py:557:Registry.register(DBObject)
+
+twistar/dbconfig/base.py:8:from twistar.registry import Registry
+twistar/dbconfig/base.py:58:        return Registry.DBPOOL.runOperation(query, *args, **kwargs)
+twistar/dbconfig/base.py:67:        return Registry.DBPOOL.runQuery(query, *args, **kwargs)
+twistar/dbconfig/base.py:293:        if cacheable and not Registry.SCHEMAS.has_key(tablename):
+twistar/dbconfig/base.py:294:            Registry.SCHEMAS[tablename] = cols
+twistar/dbconfig/base.py:307:        if not Registry.SCHEMAS.has_key(tablename) and txn is not None:
+twistar/dbconfig/base.py:312:            Registry.SCHEMAS[tablename] = [row[0] for row in txn.description]
+twistar/dbconfig/base.py:313:        return Registry.SCHEMAS.get(tablename, [])
+twistar/dbconfig/base.py:319:        return Registry.DBPOOL.runInteraction(interaction, *args, **kwargs)
+
+twistar/dbconfig/sqlite.py:1:from twistar.registry import Registry
+twistar/dbconfig/sqlite.py:35:        return Registry.DBPOOL.runInteraction(_insertMany)
+
+twistar/relationships.py:9:from twistar.registry import Registry
+twistar/relationships.py:38:        self.dbconfig = Registry.getConfig()
+twistar/relationships.py:51:            self.otherklass = Registry.getClass(otherklassname)
+twistar/relationships.py:72:            return Registry.getClass(kname).find(kid)
+
+
+
+still remain:
+
+twistar/utils.py:7:from twistar.registry import Registry
+twistar/utils.py:18:        config = Registry.getConfig()
+twistar/utils.py:30:        return Registry.DBPOOL.runInteraction(_transaction, args, kwargs)
+
+twistar/tests/test_dbconfig.py:5:from twistar.registry import Registry
+twistar/tests/test_dbconfig.py:18:        self.dbconfig = Registry.getConfig()
+twistar/tests/postgres_config.py:4:from twistar.registry import Registry
+twistar/tests/postgres_config.py:6:CONNECTION = Registry.DBPOOL = adbapi.ConnectionPool('psycopg2', "dbname=twistar")
+twistar/tests/utils.py:5:from twistar.registry import Registry
+twistar/tests/utils.py:53:Registry.register(Picture, User, Comment, Avatar, FakeObject, FavoriteColor)
+twistar/tests/utils.py:54:Registry.register(Boy, Girl, Nickname)
+twistar/tests/utils.py:55:Registry.register(Blogpost, Category)
+twistar/tests/test_dbobject.py:6:from twistar.registry import Registry
+twistar/tests/test_dbobject.py:69:        dateklass = Registry.getDBAPIClass("Date")
+twistar/tests/test_dbobject.py:142:        dateklass = Registry.getDBAPIClass("Date")
+twistar/tests/test_dbobject.py:158:        dateklass = Registry.getDBAPIClass("Date")
+twistar/tests/test_utils.py:6:from twistar.registry import Registry
+twistar/tests/sqlite_config.py:4:from twistar.registry import Registry
+twistar/tests/sqlite_config.py:8:    Registry.DBPOOL = adbapi.ConnectionPool('sqlite3', location, check_same_thread=False)
+twistar/tests/sqlite_config.py:32:    return Registry.DBPOOL.runInteraction(runInitTxn)
+twistar/tests/mysql_config.py:4:from twistar.registry import Registry
+twistar/tests/mysql_config.py:6:CONNECTION = Registry.DBPOOL = adbapi.ConnectionPool('MySQLdb', user="", passwd="", host="localhost", db="twistar")
+twistar/tests/test_relationships.py:19:        self.config = Registry.getConfig()
+twistar/tests/test_transactions.py:15:        self.config = Registry.getConfig()
+README.markdown:20:from twistar.registry import Registry
+README.markdown:32:Registry.DBPOOL = adbapi.ConnectionPool('MySQLdb', user="twistar", passwd="apass", db="twistar")
