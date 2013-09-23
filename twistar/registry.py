@@ -86,5 +86,3 @@ class Registry:
             raise NotImplementedError, "twisteddb does not support the %s driver" % dbapi.__name__
 
         return self.IMPL
-
-
